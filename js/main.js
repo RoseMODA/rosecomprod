@@ -258,13 +258,8 @@ function setupVerTodoButton() {
     verTodoBtn.addEventListener('click', (e) => {
       e.preventDefault();
       
-      if (appState.isHomePage) {
-        // En la página principal, mostrar catálogo completo
-        showAllProducts();
-      } else {
-        // En otras páginas, redirigir a la página principal con catálogo completo
-        window.location.href = appState.currentPageCategory ? '../index.html' : 'index.html';
-      }
+      // En todas las páginas, mostrar catálogo completo
+      showAllProducts();
     });
   }
 }
@@ -397,7 +392,7 @@ function renderCategoryProducts() {
 }
 
 /**
- * Muestra todos los productos (desde página principal)
+ * Muestra todos los productos (funciona en todas las páginas)
  */
 function showAllProducts() {
   // Resetear filtros
@@ -417,11 +412,21 @@ function showAllProducts() {
   if (searchInput) searchInput.value = '';
   
   // Mostrar vista de catálogo completo
-  const carouselSections = document.getElementById('carousel-sections');
-  const fullCatalog = document.getElementById('full-catalog');
-  
-  if (carouselSections) carouselSections.classList.add('hidden');
-  if (fullCatalog) fullCatalog.classList.remove('hidden');
+  if (appState.isHomePage) {
+    // En la página principal
+    const carouselSections = document.getElementById('carousel-sections');
+    const fullCatalog = document.getElementById('full-catalog');
+    
+    if (carouselSections) carouselSections.classList.add('hidden');
+    if (fullCatalog) fullCatalog.classList.remove('hidden');
+  } else {
+    // En páginas de categoría
+    const categoryPage = document.getElementById('category-page');
+    const fullCatalog = document.getElementById('full-catalog');
+    
+    if (categoryPage) categoryPage.classList.add('hidden');
+    if (fullCatalog) fullCatalog.classList.remove('hidden');
+  }
   
   // Renderizar todos los productos
   const allProducts = filterProducts(appState.currentFilters);
@@ -429,6 +434,18 @@ function showAllProducts() {
   
   renderCatalogGrid(sortedProducts, 'catalog-grid-old');
   updateResultsCount(sortedProducts.length, 'results-count-old');
+  
+  // Configurar el selector de ordenamiento para el catálogo completo
+  const sortSelectOld = document.getElementById('sort-select-old');
+  if (sortSelectOld) {
+    sortSelectOld.value = appState.currentSort;
+    sortSelectOld.addEventListener('change', (e) => {
+      appState.currentSort = e.target.value;
+      const allProducts = filterProducts(appState.currentFilters);
+      const sortedProducts = sortProducts(allProducts, appState.currentSort);
+      renderCatalogGrid(sortedProducts, 'catalog-grid-old');
+    });
+  }
 }
 
 /**
