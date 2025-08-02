@@ -357,6 +357,169 @@ ${selectedSize ? `📏 Talla: ${selectedSize}` : ''}
   
   // Menú móvil
   setupMobileMenu();
+  
+  // Inicializar lightbox
+  initializeLightbox();
+}
+
+/**
+ * Inicializa la funcionalidad del lightbox para las imágenes
+ */
+function initializeLightbox() {
+  try {
+    console.log('🖼️ Inicializando lightbox...');
+    
+    // Seleccionar todas las imágenes que pueden abrir lightbox
+    const productImages = document.querySelectorAll('#main-product-image, #thumbnail-gallery img');
+    
+    if (!productImages.length) {
+      console.warn('No se encontraron imágenes para el lightbox');
+      return;
+    }
+    
+    productImages.forEach((img) => {
+      // Agregar clase para mejorar visualización
+      img.classList.add('product-image-full');
+      
+      // Agregar event listener para abrir lightbox
+      img.addEventListener('click', function(e) {
+        // Prevenir el comportamiento por defecto si es thumbnail
+        if (this.id !== 'main-product-image') {
+          e.stopPropagation();
+        }
+        
+        openLightbox(this.src, currentProduct.name);
+      });
+    });
+    
+    console.log(`✅ Lightbox configurado para ${productImages.length} imágenes`);
+    
+  } catch (error) {
+    console.error('❌ Error inicializando lightbox:', error);
+  }
+}
+
+/**
+ * Abre el lightbox con la imagen especificada
+ */
+function openLightbox(imageSrc, altText) {
+  try {
+    // Crear overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'lightbox-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-label', 'Vista ampliada de imagen');
+    
+    // Crear container
+    const container = document.createElement('div');
+    container.className = 'lightbox-container';
+    
+    // Crear imagen
+    const lightboxImg = document.createElement('img');
+    lightboxImg.src = imageSrc;
+    lightboxImg.alt = altText || 'Imagen del producto';
+    lightboxImg.style.maxWidth = '100%';
+    lightboxImg.style.maxHeight = '100%';
+    
+    // Crear botón de cerrar
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'lightbox-close';
+    closeBtn.innerHTML = '×';
+    closeBtn.setAttribute('aria-label', 'Cerrar vista ampliada');
+    closeBtn.setAttribute('title', 'Cerrar (Esc)');
+    
+    // Ensamblar elementos
+    container.appendChild(lightboxImg);
+    container.appendChild(closeBtn);
+    overlay.appendChild(container);
+    
+    // Agregar al DOM
+    document.body.appendChild(overlay);
+    
+    // Prevenir scroll del body
+    document.body.style.overflow = 'hidden';
+    
+    // Mostrar con animación
+    setTimeout(() => {
+      overlay.classList.add('show');
+    }, 10);
+    
+    // Event listeners para cerrar
+    setupLightboxCloseEvents(overlay);
+    
+    // Focus en el botón de cerrar para accesibilidad
+    closeBtn.focus();
+    
+  } catch (error) {
+    console.error('❌ Error abriendo lightbox:', error);
+    showNotification('Error al mostrar la imagen', 'error');
+  }
+}
+
+/**
+ * Configura los eventos para cerrar el lightbox
+ */
+function setupLightboxCloseEvents(overlay) {
+  const closeBtn = overlay.querySelector('.lightbox-close');
+  const container = overlay.querySelector('.lightbox-container');
+  
+  // Cerrar con botón X
+  closeBtn.addEventListener('click', () => {
+    closeLightbox(overlay);
+  });
+  
+  // Cerrar al hacer clic fuera de la imagen
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      closeLightbox(overlay);
+    }
+  });
+  
+  // Cerrar con tecla Escape
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      closeLightbox(overlay);
+      document.removeEventListener('keydown', handleKeyDown);
+    }
+  };
+  
+  document.addEventListener('keydown', handleKeyDown);
+  
+  // Guardar referencia para limpieza
+  overlay._keydownHandler = handleKeyDown;
+}
+
+/**
+ * Cierra el lightbox
+ */
+function closeLightbox(overlay) {
+  try {
+    // Remover clase show para animación de salida
+    overlay.classList.remove('show');
+    
+    // Remover event listener de teclado
+    if (overlay._keydownHandler) {
+      document.removeEventListener('keydown', overlay._keydownHandler);
+    }
+    
+    // Restaurar scroll del body
+    document.body.style.overflow = '';
+    
+    // Remover del DOM después de la animación
+    setTimeout(() => {
+      if (overlay.parentNode) {
+        overlay.parentNode.removeChild(overlay);
+      }
+    }, 300);
+    
+  } catch (error) {
+    console.error('❌ Error cerrando lightbox:', error);
+    // Forzar limpieza en caso de error
+    document.body.style.overflow = '';
+    if (overlay.parentNode) {
+      overlay.parentNode.removeChild(overlay);
+    }
+  }
 }
 
 /**

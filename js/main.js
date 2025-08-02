@@ -111,17 +111,58 @@ async function initializeApp() {
 function setupHomePage() {
   console.log('🏠 Configurando página principal...');
   
-  // Renderizar carruseles
+  // Renderizar carruseles principales
   const featuredProducts = getFeaturedProducts();
   const saleProducts = getOnSaleProducts();
   
   updateCarouselTrack('carousel-track', featuredProducts);
   updateCarouselTrack('carousel-track-ofertas', saleProducts);
   
+  // Configurar carruseles por categoría
+  setupCategoryCarousels();
+  
   // Configurar botón "Ver Todo"
   const verTodoBtn = document.querySelector('.btn-ver-todo');
   if (verTodoBtn) {
     verTodoBtn.addEventListener('click', showAllProducts);
+  }
+}
+
+/**
+ * Configura carruseles por categoría en la página principal
+ */
+function setupCategoryCarousels() {
+  try {
+    console.log('🎠 Configurando carruseles por categoría...');
+    
+    const categories = ['mujer', 'hombre', 'ninos', 'otros'];
+    
+    categories.forEach(category => {
+      // Obtener productos de la categoría
+      const categoryProducts = filterProducts({
+        category: category,
+        search: '',
+        onSale: false,
+        subcategory: 'all',
+        colors: [],
+        sizes: [],
+        minPrice: null,
+        maxPrice: null
+      });
+      
+      // Limitar a 8 productos por carrusel para mejor rendimiento
+      const limitedProducts = categoryProducts.slice(0, 8);
+      
+      // Actualizar el carrusel correspondiente
+      const trackId = `carousel-track-${category}`;
+      updateCarouselTrack(trackId, limitedProducts);
+      
+      console.log(`✅ Carrusel ${category}: ${limitedProducts.length} productos`);
+    });
+    
+  } catch (error) {
+    console.error('❌ Error configurando carruseles por categoría:', error);
+    showNotification('Error al cargar productos por categoría', 'error');
   }
 }
 
@@ -161,6 +202,9 @@ function setupCategoryPage() {
  * Configura todos los event listeners
  */
 function setupEventListeners() {
+  // Configurar botón "Ver Todo" en todas las páginas
+  setupVerTodoButton();
+  
   // Búsqueda
   const searchInput = document.querySelector('input[type="search"]');
   if (searchInput) {
@@ -206,6 +250,26 @@ function setupEventListeners() {
 }
 
 /**
+ * Configura el botón "Ver Todo" en todas las páginas
+ */
+function setupVerTodoButton() {
+  const verTodoBtn = document.querySelector('.btn-ver-todo');
+  if (verTodoBtn) {
+    verTodoBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      if (appState.isHomePage) {
+        // En la página principal, mostrar catálogo completo
+        showAllProducts();
+      } else {
+        // En otras páginas, redirigir a la página principal con catálogo completo
+        window.location.href = appState.currentPageCategory ? '../index.html' : 'index.html';
+      }
+    });
+  }
+}
+
+/**
  * Maneja la búsqueda de productos
  */
 function handleSearch(e) {
@@ -219,6 +283,9 @@ function handleSearch(e) {
     
     updateCarouselTrack('carousel-track', featuredFiltered);
     updateCarouselTrack('carousel-track-ofertas', saleFiltered);
+    
+    // También actualizar carruseles por categoría
+    setupCategoryCarousels();
   } else {
     // En páginas de categoría, actualizar grid
     renderCategoryProducts();

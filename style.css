@@ -666,9 +666,170 @@ button.arrow-btn.next {
       cursor: pointer;
     }
 
+    /* Lightbox Styles */
+    .lightbox-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
 
+    .lightbox-overlay.show {
+      opacity: 1;
+    }
 
-        /* Estilos para el menú desplegable de subcategorías en móvil */
+    .lightbox-container {
+      position: relative;
+      max-width: 90%;
+      max-height: 90%;
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+    }
+
+    .lightbox-overlay.show .lightbox-container {
+      transform: scale(1);
+    }
+
+    .lightbox-container img {
+      width: 100%;
+      height: auto;
+      max-height: 80vh;
+      object-fit: contain;
+      border-radius: 0.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: -1rem;
+      right: -1rem;
+      background-color: #222;
+      color: #fff;
+      border: none;
+      font-size: 1.5rem;
+      line-height: 1;
+      padding: 0.5rem;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease;
+      font-weight: bold;
+    }
+
+    .lightbox-close:hover {
+      background-color: #d63629;
+    }
+
+    /* Improved Product Image Visualization */
+    .product-image-full {
+      object-fit: contain !important;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .product-image-full:hover {
+      transform: scale(1.02);
+    }
+
+    /* Category Carousel Sections */
+    .category-carousel-section {
+      margin: 3rem 0;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 1rem;
+    }
+
+    .category-carousel-title {
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #a22a26;
+      letter-spacing: 0.15em;
+      font-size: 1.1rem;
+      text-align: center;
+      margin: 0 0 2rem 0;
+      background: linear-gradient(90deg, transparent, #d76c6b44, transparent);
+      padding: 0.6rem 0;
+      user-select: none;
+    }
+
+    .ver-mas-btn {
+      background: #222;
+      color: white;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      padding: 0.75rem 2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      user-select: none;
+      transition: all 0.3s ease;
+      border: none;
+      border-radius: 0.25rem;
+      text-decoration: none;
+      display: inline-block;
+      margin: 2rem auto;
+      text-align: center;
+    }
+
+    .ver-mas-btn:hover,
+    .ver-mas-btn:focus {
+      background: #d63629;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+      outline: none;
+    }
+
+    .carousel-section-container {
+      text-align: center;
+    }
+
+    /* Mobile responsive adjustments for new elements */
+    @media (max-width: 768px) {
+      .lightbox-container {
+        max-width: 95%;
+        max-height: 95%;
+      }
+
+      .lightbox-close {
+        top: -0.5rem;
+        right: -0.5rem;
+        width: 2rem;
+        height: 2rem;
+        font-size: 1.2rem;
+      }
+
+      .category-carousel-section {
+        margin: 2rem 0;
+        padding: 0 0.5rem;
+      }
+
+      .category-carousel-title {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .ver-mas-btn {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Estilos para el menú desplegable de subcategorías en móvil */
     .mobile-subcategory-menu {
         position: absolute;
         top: 100%;
